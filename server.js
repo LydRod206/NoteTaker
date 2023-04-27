@@ -2,7 +2,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const nanoid = require('nanoid');
+const crypto = require('crypto');
 // create express app
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 // GET route for notes page
-app.get('/api/notes', (req,res) => {
+app.get('/notes', (req,res) => {
     res.sendFile(path.join(__dirname, '/public/notes.html'));
 });
 // GET route for getting all notes
@@ -25,12 +25,13 @@ app.get('/api/notes', (req, res) => {
     res.json(notes);
 });
 // POST route for adding a new note
-app.post('/api//api/notes', (req, res) => {
+app.post('/api/notes', (req, res) => {
     const newNote = req.body;
-    newNote.id = nanoid();
+    const cryptoUUID = crypto.randomBytes(16).toString('hex');
+    newNote.id = cryptoUUID;
     const notes = JSON.parse(fs.readFileSync('./db/db.json', 'utf8'));
     notes.push(newNote);
-    fs.writeFileSync('./db/db.json'. JSON.stringify(notes));
+    fs.writeFileSync('./db/db.json', JSON.stringify(notes));
     res.json(newNote);
 });
 // DELETE route for deleting a note by ID
